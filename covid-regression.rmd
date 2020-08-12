@@ -79,16 +79,16 @@ Using `caret` (or something else if you like), prepare two datasets of pre-proce
 
 ```{r}
 partition <- createDataPartition(data_covid$deaths_per1000, p = .8, list = F)
-data_covid_train_c <- data_covid %>% slice(partition)
-data_covid_test_c <- data_covid %>% slice(-partition)
+data_covid_train <- data_covid %>% slice(partition)
+data_covid_test <- data_covid %>% slice(-partition)
 ```
 
 ## Preprocess
 
 ```{r}
-data_covid_prep <- preProcess(x = data_covid_train_c, method = c("center", "scale"))
-data_covid_train_c_processed <- predict(data_covid_prep, data_covid_train_c)
-data_covid_test_c_processed <- predict(data_covid_prep, data_covid_test_c)
+data_covid_prep <- preProcess(x = data_covid_train, method = c("center", "scale"))
+data_covid_train_processed <- predict(data_covid_prep, data_covid_train)
+data_covid_test_processed <- predict(data_covid_prep, data_covid_test)
 ```
 
 
@@ -100,7 +100,7 @@ data_covid_test_c_processed <- predict(data_covid_prep, data_covid_test_c)
 - Evaluate the model
 
 ```{r}
-death_model <- lm(deaths_per1000 ~ Poverty + Unemployment + Black + Hispanic + IncomePerCap, data=data_covid_train_c_processed)
+death_model <- lm(deaths_per1000 ~ Poverty + Unemployment + Black + Hispanic + IncomePerCap, data=data_covid_train_processed)
 summary(death_model)
 ```
 ```{r}
