@@ -1,6 +1,6 @@
 ---
 title: "Covid regression"
-author: ""
+author: "Giada"
 date: "8/12/2020"
 output: html_document
 ---
@@ -60,7 +60,10 @@ ggplot(data_covid, aes(x = deaths_per1000)) + geom_density()
 
 
 ```{r}
-
+data_covid_use <- data_covid %>%
+  mutate(deaths_per1000_log = log(deaths_per1000 + 0.01)) %>%
+  select(deaths_per1000_log, Black, Hispanic, IncomePerCap,
+         Poverty, Unemployment, pct)
 ```
 
 ## Data preparation
@@ -75,13 +78,17 @@ Using `caret` (or something else if you like), prepare two datasets of pre-proce
 ## Train-test split
 
 ```{r}
-
+partition <- createDataPartition(data_covid$deaths_per1000, p = .8, list = F)
+data_covid_train_c <- data_covid %>% slice(partition)
+data_covid_test_c <- data_covid %>% slice(-partition)
 ```
 
 ## Preprocess
 
 ```{r}
-
+data_covid_prep <- preProcess(x = data_covid_train_c, method = c("center", "scale"))
+data_covid_train_c_processed <- predict(data_covid_prep, data_covid_train_c)
+data_covid_test_c_processed <- predict(data_covid_prep, data_covid_test_c)
 ```
 
 
@@ -93,7 +100,8 @@ Using `caret` (or something else if you like), prepare two datasets of pre-proce
 - Evaluate the model
 
 ```{r}
-
+death_model <- lm(deaths_per1000 ~ Poverty + Unemployment + Black + Hispanic + IncomePerCap, data=data_covid_train_c_processed)
+summary(death_model)
 ```
 ```{r}
 
